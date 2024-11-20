@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use cli::{get_command, Commands};
 use paths::home_path;
 use player::Player;
 use playlists::{default_playlist, display_playlists, get_playlist};
@@ -9,32 +9,15 @@ use std::{
 };
 use terminate::terminate;
 
+mod cli;
 mod paths;
 mod player;
 mod playlists;
 mod terminate;
 
-#[derive(Parser, Debug)]
-struct CLI {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-#[derive(Subcommand, Debug)]
-enum Commands {
-    /// Run cmdj with your playlist
-    Run {
-        /// Name of the playlist to be played along.
-        /// On omitted selects the first one defined in `.cmdj/config.json`
-        playlist: Option<String>,
-    },
-    /// List available playlists defined in `.cmdj/config.json`
-    Ls,
-}
-
 fn main() {
-    let args = CLI::parse();
-    match args.command {
+    let command = get_command();
+    match command {
         Commands::Run { playlist } => run_cmdj(playlist),
         Commands::Ls => display_playlists(),
     };
@@ -49,7 +32,7 @@ fn run_cmdj(playlist_name: Option<String>) {
     let player = Player::new();
 
     if let Some(path) = &playlist.start {
-        player.play(home_path().join(path));
+        player.play_forever(home_path().join(path));
     }
 
     let status = execute_sync(&user_command);
