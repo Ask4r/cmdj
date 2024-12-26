@@ -18,17 +18,18 @@ mod terminate;
 fn main() {
     let command = get_command();
     match command {
-        Commands::Run { playlist } => run_cmdj(playlist),
+        Commands::Run { playlist, cmd } => run_cmdj(playlist, cmd),
         Commands::Ls => display_playlists(),
     };
 }
 
-fn run_cmdj(playlist_name: Option<String>) {
+fn run_cmdj(playlist_name: Option<String>, command: Option<String>) {
     let playlist = match playlist_name {
         Some(name) => get_playlist(name),
         None => default_playlist(),
     };
-    let user_command = get_input_command();
+
+    let user_command = command.unwrap_or_else(get_input_command);
     let player = Player::new();
 
     if let Some(path) = &playlist.start {
@@ -50,6 +51,7 @@ fn run_cmdj(playlist_name: Option<String>) {
 }
 
 fn get_input_command() -> String {
+    println!("Enter command below");
     print!(">> ");
     io::stdout().flush().expect("Failed to display prompt");
     let mut input = String::new();

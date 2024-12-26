@@ -13,6 +13,11 @@ pub enum Commands {
         /// Name of the playlist to be played along.
         /// On omitted selects the first one defined in `.cmdj/config.json`
         playlist: Option<String>,
+        /// Command to be run.
+        /// On omitted prompts user to enter command via std input
+        /// (useful for escaping command's shell operators).
+        #[arg(long, short)]
+        cmd: Option<String>,
     },
     /// List available playlists defined in `.cmdj/config.json`
     Ls,
